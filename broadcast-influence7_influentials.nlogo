@@ -2,8 +2,16 @@ extensions [ nw ]
 
 turtles-own [ adopted? ] ;; property related to adoption
 
+breed [ influentials influential ]
+breed [ regulars regular ]
+
+
+
 to setup
   ca
+
+  set-default-shape regulars "person"
+  set-default-shape influentials "star"
 
   ;; create agents and network using random nw generator
   if network = "random" [
@@ -20,7 +28,16 @@ to setup
     ]
   ]
 
+  ;; layout the network better
   repeat 50 [ layout-spring turtles links 0.2 6 1.2 ]
+
+  ;; add a subset of the agents to be "influential" within the model
+  ask n-of (frac-influential * num-agents) turtles [
+    set breed influentials
+  ]
+  ask turtles with [ breed != influentials ] [
+    set breed regulars
+  ]
 
   reset-ticks
 end
@@ -44,7 +61,6 @@ to setup-turtles
   set adopted? false
   setxy random-xcor random-ycor
   set color white
-  set shape "person"
 end
 
 ;; reset the diffusion without destroying the network
@@ -67,28 +83,58 @@ to adopt
   ]
 
   ;; adopt based on social influence based on the local network
-  let neighbors-adopted link-neighbors with [ adopted? ]
-  let total-neighbors link-neighbors
+  if ( breed = influentials ) [
+    let neighbors-adopted link-neighbors with [ adopted? and breed = influentials ]
+    let total-neighbors link-neighbors
 
-  ;; guard against unconnected agents in the graph
-  if total-neighbors no 0 [
+    ;; guard against unconnected agents in the graph
+    if total-neighbors != 0 [
+      if not adopted? and random-float 1.0 <
+      ( social-influence * ( count neighbors-adopted / count total-neighbors ) ) [
+        set adopted? true
+        set color pink
+      ]
+    ]
+  ]
+
+  ;; adopt based on social influence based on influentials if we are regular
+   if ( breed = regulars ) [
+    let inf-neighbors-adopted link-neighbors with [ adopted? and breed = influentials ]
+    let inf-total-neighbors link-neighbors with [ breed = influentials ]
+    let reg-neighbors-adopted link-neighbors with [ adopted? and breed = regulars ]
+    let reg-total-neighbors link-neighbors with [ breed = regulars ]
+
+    let influential-influence 0
+    if count inf-total-neighbors > 0 [
+      set influential-influence count inf-neighbors-adopted / count inf-total-neighbors
+    ]
+
+    let regular-influence 0
+    if count reg-total-neighbors > 0 [
+      set regular-influence count reg-neighbors-adopted / count reg-total-neighbors
+    ]
+
+    let regular-weight 1 - influential-weight
+    let neighbor-influence influential-influence * influential-weight + (regular-influence * regular-weight)
+
     if not adopted? and random-float 1.0 <
-    ( social-influence * ( count neighbors-adopted / count total-neighbors ) ) [
+    ( social-influence * neighbor-influence ) [
       set adopted? true
       set color pink
     ]
   ]
 
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
-10
-647
-448
+380
+20
+858
+499
 -1
 -1
-13.0
+14.242424242424242
 1
 10
 1
@@ -117,7 +163,7 @@ num-agents
 num-agents
 0
 100
-57.0
+50.0
 1
 1
 NIL
@@ -225,12 +271,12 @@ NIL
 CHOOSER
 10
 180
-202
+190
 225
 network
 network
 "random" "preferential-attachment"
-0
+1
 
 SLIDER
 10
@@ -242,6 +288,36 @@ density
 0
 1.0
 0.5
+0.05
+1
+NIL
+HORIZONTAL
+
+SLIDER
+200
+20
+372
+53
+frac-influential
+frac-influential
+0
+1.0
+0.1
+0.05
+1
+NIL
+HORIZONTAL
+
+SLIDER
+200
+60
+372
+93
+influential-weight
+influential-weight
+0
+1.0
+0.7
 0.05
 1
 NIL
