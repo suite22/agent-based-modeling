@@ -71,7 +71,7 @@ to adopt
   let total-neighbors link-neighbors
 
   ;; guard against unconnected agents in the graph
-  if total-neighbors != 0 [
+  if total-neighbors no 0 [
     if not adopted? and random-float 1.0 <
     ( social-influence * ( count neighbors-adopted / count total-neighbors ) ) [
       set adopted? true
@@ -117,7 +117,7 @@ num-agents
 num-agents
 0
 100
-82.0
+57.0
 1
 1
 NIL
@@ -230,7 +230,7 @@ CHOOSER
 network
 network
 "random" "preferential-attachment"
-1
+0
 
 SLIDER
 10
