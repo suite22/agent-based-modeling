@@ -6,6 +6,10 @@ turtles-own [
   vision-points ;; the points that this turtle can see in relative to it's current position (based on vision)
 ]
 
+;; Not sure if teams should be a breed or just a color coding
+breed [ teamAs teamA ]
+breed [ teamBs teamB ]
+
 patches-own [
   pwork ;; amount of potential work units on a patch
   max-pwork ;; max amount of potential work on a patch
@@ -14,7 +18,22 @@ patches-own [
 to setup
   clear-all
 
-  create-turtles workers-per-team [ turtle-setup ]
+  ;; setup agents
+  create-turtles (workers-per-team * 2) [ turtle-setup ]
+
+  ;; assign agents to teams
+  ask n-of workers-per-team turtles [
+    set breed teamAs
+    set shape "person"
+    set color red
+  ]
+  ask turtles with [ breed != teamAs ] [
+    set breed teamBs
+    set shape "person"
+    set color blue
+  ]
+
+  ;; setup environment
   setup-patches
 
   reset-ticks
@@ -34,8 +53,7 @@ to go
 end
 
 to turtle-setup
-  set color red ;; TODO: change based on team assignment
-  set shape "person"
+
   move-to one-of patches with [ not any? other turtles-here ]
 
   ;; TODO handle "vision", but maybe that's handled by another agent type, manager
@@ -159,10 +177,46 @@ workers-per-team
 NIL
 HORIZONTAL
 
+PLOT
+660
+10
+860
+160
+Average Work Rate
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plotxy ticks mean [ work-rate ] of turtles"
+
+PLOT
+870
+10
+1070
+160
+Work Queues
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 1 -16777216 true "" "set-histogram-num-bars 10 set-plot-x-range 0 (max [work-queue] of turtles + 1) set-plot-pen-interval (max [work-queue] of turtles + 1) / 10 histogram [work-queue] of turtles"
+
 @#$#@#$#@
 ## WHAT IS IT?
 
-This model attempts to model different strategies for managing engineers in teams based on changes in workloads in the environment. The inspiration for this approach is based on Epstein & Axtell's famous Sugarscape model.
+This model attempts to model different strategies for managing workers (engineers) in teams based on changes in workloads in the environment. The inspiration for this approach is based on Epstein & Axtell's famous Sugarscape model.
 
 ## HOW IT WORKS
 
