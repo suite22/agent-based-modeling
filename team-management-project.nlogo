@@ -284,7 +284,7 @@ CHOOSER
 environment-type
 environment-type
 "harsh" "comfortable" "plush"
-1
+0
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -297,20 +297,21 @@ Similar to the Sugarscape approach, workers move around the environment picking 
 
 ## HOW TO USE IT
 
-
+Press the SETUP button to populate the world with worker agents and the environment patches with potential work for the workers to pickup. Press GO to run the model.
 
 ## THINGS TO NOTICE
 
-(suggested things for the user to notice while running the model)
+Notice how the environment of available work significantly changes the team output graphs.
 
 ## THINGS TO TRY
 
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
+Use the environment chooser to see how the amount of work available changes worker movement. Use the slider to examine how team size changes with the environment.
 
 ## EXTENDING THE MODEL
 
 Much more could be done to expand the model:
 * Various strategies for managing the teams of workers
+* More realistic clustering of team members to reflect a shared goal
 
 ## NETLOGO FEATURES
 
