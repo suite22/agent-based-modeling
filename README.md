@@ -22,5 +22,5 @@ I want to build a model to answer questions related to (engineering) team manage
 
 ## Roadmap
 * [x] Create 2 teams
-* [ ] Make the environment sparser. Agents don't have to actually search, work is everywhere.
+* [x] Make the environment sparser. Agents don't have to actually search, work is everywhere.
 * [ ] Measure team output in a graph

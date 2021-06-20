@@ -57,7 +57,7 @@ to turtle-setup
   move-to one-of patches with [ not any? other turtles-here ]
 
   ;; TODO handle "vision", but maybe that's handled by another agent type, manager
-  set work-rate 2 ;; TODO: add variety to agents
+  set work-rate 4 ;; TODO: add variety to agents
   set vision 5 ;;
   ;; Just like Sugarscape agents can only look and move along horizontal and vertical axis
   set vision-points []
@@ -69,7 +69,7 @@ end
 to setup-patches
   foreach sort patches [ p ->
     ask p [
-      set max-pwork random 5
+      set max-pwork random 6
       set pwork max-pwork
       color-patch
     ]
@@ -87,8 +87,17 @@ to turtle-move
 end
 
 to turtle-work
-  set work-queue (work-queue - work-rate + pwork)
+  ;; pickup the potential work from the patch and reset the patch
+  set work-queue (work-queue + pwork)
   set pwork 0
+
+  ;; don't allow the work-queue to go negative
+  ifelse (work-queue - work-rate) < 0 [
+    set work-queue 0
+  ][
+    set work-queue (work-queue - work-rate + pwork)
+  ]
+
 end
 
 to color-patch
@@ -171,7 +180,7 @@ workers-per-team
 workers-per-team
 0
 20
-8.0
+16.0
 1
 1
 NIL
