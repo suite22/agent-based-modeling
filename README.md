@@ -33,3 +33,15 @@ I want to build a model to answer questions related to (engineering) team manage
 * [x] Make the environment sparser. Agents don't have to actually search, work is everywhere.
 * [x] Measure team output in a graph
 * [ ] Allow different strategies for each team
+
+## Grading Criteria 
+Model Scope
+Agent Selection
+Agent Properties
+Agent Actions
+Environment
+Order of Events
+Inputs and Output
+Model Execution
+User Interface
+Model Documentation

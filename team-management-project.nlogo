@@ -69,9 +69,21 @@ to turtle-setup
 end
 
 to setup-patches
+  let env-range 0 ;; init to invalid value, then set below
+  (ifelse
+    environment-type = "harsh" [
+      set env-range 3
+   ]
+   environment-type = "comfortable" [
+      set env-range 4
+   ]
+   environment-type = "plush" [
+      set env-range 6
+   ])
+
   foreach sort patches [ p ->
     ask p [
-      set max-pwork random 4
+      set max-pwork random env-range
       set pwork max-pwork
       color-patch
     ]
@@ -264,6 +276,16 @@ false
 PENS
 "default" 1.0 0 -16777216 true "" "plotxy ticks sum [ current-work-rate ] of teamBs"
 
+CHOOSER
+15
+95
+185
+140
+environment-type
+environment-type
+"harsh" "comfortable" "plush"
+1
+
 @#$#@#$#@
 ## WHAT IS IT?
 
@@ -271,11 +293,11 @@ This model attempts to model different strategies for managing workers (engineer
 
 ## HOW IT WORKS
 
-Similar to the Sugarscape approach the environment that workers can move around contains stacks of potential work (in Sugarscape this was sugar). 
+Similar to the Sugarscape approach, workers move around the environment picking up potential work (in Sugarscape this was sugar) and then completing it based on their current work rate. 
 
 ## HOW TO USE IT
 
-(how to use the model, including a description of each of the items in the Interface tab)
+
 
 ## THINGS TO NOTICE
 
@@ -287,19 +309,20 @@ Similar to the Sugarscape approach the environment that workers can move around 
 
 ## EXTENDING THE MODEL
 
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+Much more could be done to expand the model:
+* Various strategies for managing the teams of workers
 
 ## NETLOGO FEATURES
 
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
+The model contians standard features in NetLogo.
 
 ## RELATED MODELS
 
-(models in the NetLogo Models Library and elsewhere which are of related interest)
+Sugarscape is a direct influence.
 
 ## CREDITS AND REFERENCES
 
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+* Li, J. and Wilensky, U. (2009).  NetLogo Sugarscape 2 Constant Growback model.  http://ccl.northwestern.edu/netlogo/models/Sugarscape2ConstantGrowback.  Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
 @#$#@#$#@
 default
 true
