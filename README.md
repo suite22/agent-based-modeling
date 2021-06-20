@@ -22,6 +22,7 @@ I want to build a model to answer questions related to (engineering) team manage
 * One of the central ideas I started on this subject with is the question about time to ramp up on domain knowledge. So I think new agents who join a team need to have some time delay in getting to the maximum work rate. 
 * On the reverse side I think agents probably need to either be "fired" or in some way penalized for having an empty work queue for too long.
 * What's the limiting factor in the model from hiring tons of workers? There has to be some counter balance to infinite hiring.
+    * Maybe whenever a new member joins the team it costs all the members of that breed a small amount of maximum work potential - they work a little slower for a period of time
 
 ## Strategies?
 * Fire based on FIFO?
@@ -30,5 +31,5 @@ I want to build a model to answer questions related to (engineering) team manage
 ## Roadmap
 * [x] Create 2 teams
 * [x] Make the environment sparser. Agents don't have to actually search, work is everywhere.
-* [ ] Measure team output in a graph
-* [ ]
+* [x] Measure team output in a graph
+* [ ] Allow different strategies for each team
