@@ -1,7 +1,8 @@
 turtles-own [
   work-queue ;; amount of gathered work units
   max-work-queue ;; buffer of how much each turtle can gather for future work
-  work-rate ;; the amount of work completed by the agent per tick
+  current-work-rate ;; the amount of work completed by the agent this tick
+  max-work-rate ;; max work rate the agent is capable of
   vision ;; range of patches that the turtle can see from itself
   vision-points ;; the points that this turtle can see in relative to it's current position (based on vision)
 ]
@@ -57,7 +58,8 @@ to turtle-setup
   move-to one-of patches with [ not any? other turtles-here ]
 
   ;; TODO handle "vision", but maybe that's handled by another agent type, manager
-  set work-rate 4 ;; TODO: add variety to agents
+  set max-work-rate 4 ;; TODO: add variety to agents
+  set current-work-rate 4 ;; TODO: for now start at the max
   set vision 5 ;;
   ;; Just like Sugarscape agents can only look and move along horizontal and vertical axis
   set vision-points []
@@ -69,7 +71,7 @@ end
 to setup-patches
   foreach sort patches [ p ->
     ask p [
-      set max-pwork random 6
+      set max-pwork random 4
       set pwork max-pwork
       color-patch
     ]
@@ -92,10 +94,14 @@ to turtle-work
   set pwork 0
 
   ;; don't allow the work-queue to go negative
-  ifelse (work-queue - work-rate) < 0 [
+  ifelse (work-queue - current-work-rate) < 0 [
     set work-queue 0
+    ;; naively set the work rate to whatever the amount of potential work is available
+    set current-work-rate work-queue
   ][
-    set work-queue (work-queue - work-rate + pwork)
+    set work-queue (work-queue - current-work-rate + pwork)
+    ;; TODO: for now reset the work rate to max, but could ramp slowly in the future
+    set current-work-rate max-work-rate
   ]
 
 end
@@ -202,7 +208,7 @@ true
 false
 "" ""
 PENS
-"default" 1.0 0 -16777216 true "" "plotxy ticks mean [ work-rate ] of turtles"
+"default" 1.0 0 -16777216 true "" "plotxy ticks mean [ current-work-rate ] of turtles"
 
 PLOT
 870
@@ -221,6 +227,42 @@ false
 "" ""
 PENS
 "default" 1.0 1 -16777216 true "" "set-histogram-num-bars 10 set-plot-x-range 0 (max [work-queue] of turtles + 1) set-plot-pen-interval (max [work-queue] of turtles + 1) / 10 histogram [work-queue] of turtles"
+
+PLOT
+660
+170
+860
+320
+Team A work output
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plotxy ticks sum [ current-work-rate ] of teamAs"
+
+PLOT
+870
+170
+1070
+320
+Team B work output
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plotxy ticks sum [ current-work-rate ] of teamBs"
 
 @#$#@#$#@
 ## WHAT IS IT?
