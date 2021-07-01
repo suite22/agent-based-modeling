@@ -2,12 +2,26 @@
 ## Overview
 My personal notes and projects from the [Introduction to Agent-Based Modeling class](https://www.complexityexplorer.org/courses/121-introduction-to-agent-based-modeling) offered online through the [Santa Fe Institute](https://santafe.edu).
 
-# Notes
+# Lecture Notes
 ## Unit 4
 ### BehaviorSpace
 A built-in tool within NetLogo to allow repeated runs over a range of parameter inputs.
 It can be run headless to improve speed.
 The instructor shows how to analyze the data output from BehaviorSpace in R. There's not a lot of context or lead up to this R section (4.5 video).
+
+### Thomas Schelling interview
+Fascinating because Prof. Schelling says he built the tipping model primarily as a teaching demonstration for his students. 
+"If I had had computers and known how to use them and had tried to do this on a computer. I would never have understood what I was doing. I had to see it happen right on the board in front of me. Where each move responded to other moves." ~ 5:10
+"[A friend helped me model it on a computer and then left me with it] and I was on my own. I found that using computer was terrific if I wanted to run a dozen or a hundred examples. But there was no way I could have known using the computer what was happening." 
+"Bill Rand: So the physical movement on the board helped you?"
+"I could look at this whole checkerboard and see how when he moved someplace, that induced someone else to move some other place. I could see it all before my eyes. If I had understood how to do it by computer I would have never learned what was going on."
+"I'm quite convinced that if I had suggested it to this friend what I wanted to do and he'd done it for me on the computer I would have never understood what was going on."
+
+"After I think of an idea I like to translate it into game theory, but I've never gotten an idea from game theory."
+"Bill Rand: Where do you get your ideas from?"
+"Observing."
+
+Prof. Schelling has a great story at the end of the second interview about talking with Stanley Kubrick and the author of Red Alert as they were working on what became Dr. Strangelove.
 
 # Final Project
 I want to build a model to answer questions related to (engineering) team management and movement between teams as the workloads change. One potential way to do this would be to have an A and B team with different strategies for team management based on when people are requested to move to the team based on the currently available work.
