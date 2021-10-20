@@ -1,10 +1,15 @@
 turtles-own [
   work-queue ;; amount of gathered work units
   max-work-queue ;; buffer of how much each turtle can gather for future work
-  work-rate ;; the amount of work completed by the agent per tick
+  current-work-rate ;; the amount of work completed by the agent this tick
+  max-work-rate ;; max work rate the agent is capable of
   vision ;; range of patches that the turtle can see from itself
   vision-points ;; the points that this turtle can see in relative to it's current position (based on vision)
 ]
+
+;; Not sure if teams should be a breed or just a color coding
+breed [ teamAs teamA ]
+breed [ teamBs teamB ]
 
 patches-own [
   pwork ;; amount of potential work units on a patch
@@ -14,7 +19,22 @@ patches-own [
 to setup
   clear-all
 
-  create-turtles workers-per-team [ turtle-setup ]
+  ;; setup agents
+  create-turtles (workers-per-team * 2) [ turtle-setup ]
+
+  ;; assign agents to teams
+  ask n-of workers-per-team turtles [
+    set breed teamAs
+    set shape "person"
+    set color red
+  ]
+  ask turtles with [ breed != teamAs ] [
+    set breed teamBs
+    set shape "person"
+    set color blue
+  ]
+
+  ;; setup environment
   setup-patches
 
   reset-ticks
@@ -34,12 +54,12 @@ to go
 end
 
 to turtle-setup
-  set color red ;; TODO: change based on team assignment
-  set shape "person"
+
   move-to one-of patches with [ not any? other turtles-here ]
 
   ;; TODO handle "vision", but maybe that's handled by another agent type, manager
-  set work-rate 2 ;; TODO: add variety to agents
+  set max-work-rate 4 ;; TODO: add variety to agents
+  set current-work-rate 4 ;; TODO: for now start at the max
   set vision 5 ;;
   ;; Just like Sugarscape agents can only look and move along horizontal and vertical axis
   set vision-points []
@@ -49,9 +69,21 @@ to turtle-setup
 end
 
 to setup-patches
+  let env-range 0 ;; init to invalid value, then set below
+  (ifelse
+    environment-type = "harsh" [
+      set env-range 3
+   ]
+   environment-type = "comfortable" [
+      set env-range 4
+   ]
+   environment-type = "plush" [
+      set env-range 6
+   ])
+
   foreach sort patches [ p ->
     ask p [
-      set max-pwork random 5
+      set max-pwork random env-range
       set pwork max-pwork
       color-patch
     ]
@@ -69,8 +101,21 @@ to turtle-move
 end
 
 to turtle-work
-  set work-queue (work-queue - work-rate + pwork)
+  ;; pickup the potential work from the patch and reset the patch
+  set work-queue (work-queue + pwork)
   set pwork 0
+
+  ;; don't allow the work-queue to go negative
+  ifelse (work-queue - current-work-rate) < 0 [
+    set work-queue 0
+    ;; naively set the work rate to whatever the amount of potential work is available
+    set current-work-rate work-queue
+  ][
+    set work-queue (work-queue - current-work-rate + pwork)
+    ;; TODO: for now reset the work rate to max, but could ramp slowly in the future
+    set current-work-rate max-work-rate
+  ]
+
 end
 
 to color-patch
@@ -153,48 +198,132 @@ workers-per-team
 workers-per-team
 0
 20
-8.0
+16.0
 1
 1
 NIL
 HORIZONTAL
 
+PLOT
+660
+10
+860
+160
+Average Work Rate
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plotxy ticks mean [ current-work-rate ] of turtles"
+
+PLOT
+870
+10
+1070
+160
+Work Queues
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 1 -16777216 true "" "set-histogram-num-bars 10 set-plot-x-range 0 (max [work-queue] of turtles + 1) set-plot-pen-interval (max [work-queue] of turtles + 1) / 10 histogram [work-queue] of turtles"
+
+PLOT
+660
+170
+860
+320
+Team A work output
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plotxy ticks sum [ current-work-rate ] of teamAs"
+
+PLOT
+870
+170
+1070
+320
+Team B work output
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plotxy ticks sum [ current-work-rate ] of teamBs"
+
+CHOOSER
+15
+95
+185
+140
+environment-type
+environment-type
+"harsh" "comfortable" "plush"
+0
+
 @#$#@#$#@
 ## WHAT IS IT?
 
-This model attempts to model different strategies for managing engineers in teams based on changes in workloads in the environment. The inspiration for this approach is based on Epstein & Axtell's famous Sugarscape model.
+This model attempts to model different strategies for managing workers (engineers) in teams based on changes in workloads in the environment. The inspiration for this approach is based on Epstein & Axtell's famous Sugarscape model.
 
 ## HOW IT WORKS
 
-Similar to the Sugarscape approach the environment that workers can move around contains stacks of potential work (in Sugarscape this was sugar). 
+Similar to the Sugarscape approach, workers move around the environment picking up potential work (in Sugarscape this was sugar) and then completing it based on their current work rate. 
 
 ## HOW TO USE IT
 
-(how to use the model, including a description of each of the items in the Interface tab)
+Press the SETUP button to populate the world with worker agents and the environment patches with potential work for the workers to pickup. Press GO to run the model.
 
 ## THINGS TO NOTICE
 
-(suggested things for the user to notice while running the model)
+Notice how the environment of available work significantly changes the team output graphs.
 
 ## THINGS TO TRY
 
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
+Use the environment chooser to see how the amount of work available changes worker movement. Use the slider to examine how team size changes with the environment.
 
 ## EXTENDING THE MODEL
 
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+Much more could be done to expand the model:
+* Various strategies for managing the teams of workers
+* More realistic clustering of team members to reflect a shared goal
 
 ## NETLOGO FEATURES
 
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
+The model contians standard features in NetLogo.
 
 ## RELATED MODELS
 
-(models in the NetLogo Models Library and elsewhere which are of related interest)
+Sugarscape is a direct influence.
 
 ## CREDITS AND REFERENCES
 
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+* Li, J. and Wilensky, U. (2009).  NetLogo Sugarscape 2 Constant Growback model.  http://ccl.northwestern.edu/netlogo/models/Sugarscape2ConstantGrowback.  Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
 @#$#@#$#@
 default
 true
